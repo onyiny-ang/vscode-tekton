@@ -1,5 +1,5 @@
-# Visual Studio Code Tekton Pipelines Extension
----
+# Visual Studio Code Tekton Pipelines Extension  <img src="images/tekton.png" alt="tekton" width="50"/>
+
 [![Build Status](https://travis-ci.org/onyiny-ang/vscode-tekton.svg?branch=master)](https://travis-ci.org/onyiny-ang/vscode-tekton)
 
 ## Overview
@@ -19,7 +19,7 @@ For detail analysis of how to setup and run local OpenShift Cluster using minish
 
 #### CLI Tools
 
-This extension uses the [Tekton CLI](https://github.com/tektoncd/cli): *tkn*
+This extension uses the [Tekton CLI](https://github.com/tektoncd/cli):  `tkn`
 
 #### Extensions
 

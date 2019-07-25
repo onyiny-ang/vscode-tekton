@@ -2,7 +2,7 @@
   "name": "vscode-tekton",
   "displayName": "Tekton",
   "description": "Tekton pipelines integration",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "publisher": "redhat",
   "repository": {
@@ -317,7 +317,7 @@
         },
         {
           "command": "tekton.explorer.reportIssue",
-          "when": "view == openshiftProjectExplorer",
+          "when": "view == tektonPipelineExplorer",
           "group": "navigation"
         }
       ],
@@ -326,6 +326,11 @@
           "command": "tekton.pipeline.restart",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c1@1"
+        },
+        {
+          "command": "tekton.pipeline.start",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c1@2"
         },
         {
           "command": "tekton.pipeline.list",
@@ -350,7 +355,7 @@
         {
           "command": "tekton.pipelinerun.list",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c1@2"
+          "group": "c1@4"
         },
         {
           "command": "tekton.pipelinerun.restart",
