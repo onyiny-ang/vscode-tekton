@@ -271,7 +271,7 @@ function compareTime(a, b): number {
 
 export class TknImpl implements Tkn {
 
-    private ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
+    public static ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
     private cache: Map<TektonNode, TektonNode[]> = new Map();
     private static cli: cliInstance.ICli = cliInstance.Cli.getInstance();
     private static instance: Tkn;
@@ -285,17 +285,17 @@ export class TknImpl implements Tkn {
         return TknImpl.instance;
     }
     async getPipelineResources(): Promise<TektonNode[]> {
-        if (!this.cache.has(this.ROOT)) {
-            this.cache.set(this.ROOT, await this._getPipelineResources());
+        if (!this.cache.has(TknImpl.ROOT)) {
+            this.cache.set(TknImpl.ROOT, await this._getPipelineResources());
         }
-        return this.cache.get(this.ROOT);
+        return this.cache.get(TknImpl.ROOT);
     }
 
     public async _getPipelineResources(): Promise<TektonNode[]> {
         let pipelineTree: TektonNode[] = [];
-        let pipelineNode = new TektonNodeImpl(this.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
-        let taskNode = new TektonNodeImpl(this.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        let clustertaskNode = new TektonNodeImpl(this.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
+        let pipelineNode = new TektonNodeImpl(TknImpl.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
+        let taskNode = new TektonNodeImpl(TknImpl.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
+        let clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
         pipelineTree.push(pipelineNode, taskNode, clustertaskNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));

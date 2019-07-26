@@ -79,8 +79,8 @@ suite("tool configuration", () => {
             sb.stub(shelljs, 'which').returns(<string & shelljs.ShellReturnValue>{stdout: 'tkn'});
             sb.stub(fs, 'existsSync').returns(false);
             sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tool['tkn'].version);
-            const toolLtknation = await ToolsConfig.detectOrDownload();
-            assert.equal(toolLtknation, 'tkn');
+            const tooltknation = await ToolsConfig.detectOrDownload();
+            assert.equal(tooltknation, 'tkn');
         });
 
         test('returns path to previously downloaded tool if detected version is correct', async () => {
