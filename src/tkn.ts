@@ -139,17 +139,17 @@ export class TektonNodeImpl implements TektonNode {
     private readonly CONTEXT_DATA = {
         pipelinenode: {
             icon: 'pipe.png',
-            tooltip: 'Pipeline: {label}',
+            tooltip: 'Pipelines: {label}',
             getChildren: () => this.tkn.getPipelines(this)
         },
         tasknode: {
             icon: 'task.png',
-            tooltip: 'Task: {label}',
+            tooltip: 'Tasks: {label}',
             getChildren: () => this.tkn.getTasks(this)
         },
         clustertasknode: {
             icon: 'clustertask.png',
-            tooltip: 'Clustertask: {label}',
+            tooltip: 'ClusterTasks: {label}',
             getChildren: () => this.tkn.getClusterTasks(this)
         },
         pipeline: {
@@ -295,7 +295,7 @@ export class TknImpl implements Tkn {
         let pipelineTree: TektonNode[] = [];
         let pipelineNode = new TektonNodeImpl(TknImpl.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
         let taskNode = new TektonNodeImpl(TknImpl.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        let clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
+        let clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, "ClusterTasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
         pipelineTree.push(pipelineNode, taskNode, clustertaskNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));

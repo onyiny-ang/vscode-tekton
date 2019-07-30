@@ -21,6 +21,7 @@ suite('Tekton/Clustertask', () => {
     let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
+    let termStub: sinon.SinonStub;
     let getClusterTaskStub: sinon.SinonStub;
     let inputStub: sinon.SinonStub;
     const clustertaskNode = new TestItem(TknImpl.ROOT, 'test-clustertask', ContextType.CLUSTERTASK, null);
@@ -41,10 +42,9 @@ suite('Tekton/Clustertask', () => {
         sandbox.restore();
     });
 
-    test('list calls tkn clustertask list', () => {
-        ClusterTask.list(clustertaskItem);
-
-        expect(execStub).calledOnceWith(Command.listClusterTasks(clustertaskItem.getName()));
+    test('list calls tkn clustertask list', async () => {
+        await ClusterTask.list(clustertaskItem);
+        expect(termStub).calledOnceWith(Command.listClusterTasks(clustertaskItem.getName()));
     });
 
     suite('called from command bar', () => {

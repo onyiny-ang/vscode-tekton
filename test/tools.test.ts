@@ -200,7 +200,7 @@ suite("tool configuration", () => {
         test('keeps tool configuration if there is no platform attribute', () => {
             let config: object = {
                 tkn: {
-                    name: 'OpenShift Do tool',
+                    name: 'Tekton Pipeline Tkn tool',
                     version: '0.0.100'
                 }
             };
@@ -210,7 +210,7 @@ suite("tool configuration", () => {
         test('removes tool configuration if platform is not supported', () => {
             let config: object = {
                 tkn: {
-                    name: 'OpenShift Do tool',
+                    name: 'Tekton Pipelines Tkn tool',
                     version: '0.0.100',
                     platform: {
                         win32: {
