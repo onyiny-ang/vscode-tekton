@@ -29,7 +29,7 @@ suite("tkn", () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        sandbox.stub(ToolsConfig, 'getVersion').resolves('0.0.15');
+        sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
         tknCli.clearCache();
     });
 
@@ -111,28 +111,26 @@ suite("tkn", () => {
     });
 
     suite('item listings', () => {
-        let execStub: sinon.SinonStub, yamlStub: sinon.SinonStub;
+        let execStub: sinon.SinonStub,  yamlStub: sinon.SinonStub;
+        let getPipelines: sinon.SinonStub;
         const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
         const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
         const pipelineItem2 = new TestItem(pipelineNodeItem, 'pipeline2', tkn.ContextType.PIPELINE);
         const pipelineItem3 = new TestItem(pipelineNodeItem, 'pipeline3', tkn.ContextType.PIPELINE);
-        const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun', tkn.ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
-        const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', tkn.ContextType.TASKRUN, undefined, "2019-07-25T12:03:00Z", "True");
+        const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun1', tkn.ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+        const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', tkn.ContextType.TASKRUN, undefined, "2019-07-25T12:03:00Z", "True");
         const taskItem = new TestItem(tkn.TknImpl.ROOT, 'task', tkn.ContextType.TASK);
 
         setup(() => {
             execStub = sandbox.stub(tknCli, 'execute');
             yamlStub = sandbox.stub(jsYaml, 'safeLoad');
-            sandbox.stub(fs, 'readFileSync');
-            sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([pipelineItem1, pipelineItem2, pipelineItem3]);
             sandbox.stub(tkn.TknImpl.prototype, "getTasks").resolves([taskItem]);
-            sandbox.stub(tkn.TknImpl.prototype, "getPipelineRuns").resolves([pipelinerunItem]);
-            sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([pipelinerunItem]);
         });
 
-        test('getPipelines returns items created from tkn get pipeline', async () => {
+        test('getPipelines returns items from tkn pipeline list command', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([pipelineItem1, pipelineItem2, pipelineItem3]);
             const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
-            execStub.resolves({ stdout: tknPipelines.join('\n'), stderr: '', error: null });
+            execStub.resolves({ error: null, stderr: '', stdout: tknPipelines.join('\n') });
             const result = await tknCli.getPipelines(pipelineItem1);
 
             expect(execStub).calledWith(tkn.Command.listPipelines());
@@ -143,6 +141,7 @@ suite("tkn", () => {
         });
 
         test('getPipelines returns empty list if tkn produces no output', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([]);
             execStub.resolves({ stdout: '', stderr: '', error: null });
             const result = await tknCli.getPipelines(pipelineNodeItem);
 
@@ -158,12 +157,13 @@ suite("tkn", () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
-            expect(errorStub).calledOnceWith(`Cannot retrieve pipelines for current cluster. Error: ${errorMessage}`);
+            expect(errorStub).calledOnceWith(`Error: ${errorMessage}`);
         });
 
         test('getPipelineRuns returns pipelineruns for a pipeline', async () => {
-            const activeApps = [{ name: 'pipelinerun1', pipeline: 'pipeline1' }, { name: 'pipelinerun2', pipeline: 'pipeline1'}];
-            yamlStub.returns({ ActivePipelineRuns: activeApps });
+            sandbox.stub(tkn.TknImpl.prototype, "getPipelineRuns").resolves([pipelinerunItem]);
+            const activePipelineRuns = [{ name: 'pipelinerun1', pipeline: 'pipeline1' }];
+            yamlStub.returns({ ActivePipelineRuns: activePipelineRuns });
             execStub.returns({
                 error: undefined,
                 stdout: JSON.stringify({
@@ -186,8 +186,7 @@ suite("tkn", () => {
         });
 
         test('getPipelineRuns returns empty list if no tkn pipelineruns are present', async () => {
-            const activeApps = [{ name: 'pipelinerun1', pipeline: 'pipeline1' }, { name: 'pipelinerun2', pipeline: 'pipeline1'}];
-            yamlStub.returns({ ActivePipelineRuns: activeApps });
+            sandbox.stub(tkn.TknImpl.prototype, "getPipelineRuns").resolves([]);
             execStub.returns({
                 error: undefined,
                 stdout: JSON.stringify({
@@ -203,6 +202,7 @@ suite("tkn", () => {
         });
 
         test('getTaskRun returns taskrun list for a pipelinerun', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([taskrunItem]);
             const activeApps = [{ name: 'taskrun1', pipeline: 'pipeline1' }, { name: 'taskrun2', pipeline: 'pipeline1'}];
             yamlStub.returns({ ActivePipelineRuns: activeApps });
             execStub.returns({
@@ -226,6 +226,7 @@ suite("tkn", () => {
         });
 
         test('getTaskruns returns taskruns for a pipelinerun', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([taskrunItem]);
             const taskruns = ['taskrun1', 'taskrun2', 'taskrun3'];
             execStub.resolves({ error: null, stderr: '', stdout: taskruns.join('\n') });
             const result = await tknCli.getTaskRuns(pipelinerunItem);
@@ -238,6 +239,7 @@ suite("tkn", () => {
         });
 
         test('getTaskruns returns an empty list if an error occurs', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([]);
             execStub.onFirstCall().resolves({error: undefined, stdout: '', stderr: ''});
             execStub.onSecondCall().rejects(errorMessage);
             const result = await tknCli.getTaskRuns(pipelinerunItem);
